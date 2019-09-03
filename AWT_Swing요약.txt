@@ -1,0 +1,425 @@
+[AWT(Abstract WindowToolkit) 컴포넌트의 계층도])
+
+- Windows 프로그래밍을 하기 위한 라이브러리.  GUI 어플리케이션을 개발하기 위한 다양한 패키지와 class 로 구성
+
+   |----Button
+   |----Checkbox  ----라디오버튼도 생성할 수 있음(생성자 인자에 따라 결정 할 수 있음)
+   |----List
+   |----Canvas
+   |----Choice
+   |----Container
+   |       |---------Panel(부분 디자인을 위한 서브윈도우)
+   |       |           |------Applet
+   |	   |
+   |       |---------Window(전체적인 프레임워크-기본바탕)
+   |                    |----Dialog(대화상자)
+   |                    |        |------------FileDialog(파일저장,파일열기)
+   |                    |----Frame(실제 윈도우 모양 틀 즉 최대화,최소화버튼 상태바등)
+   |----TextComponent 
+   |         |---TextField
+   |	     |---TextArea
+   |----Scrollbar
+				
+
+	- Panel계열은 FlowLayout이 디폴트
+	- Window계열은 BorderLayout이 디폴트
+	- Panel은 컨테이너면서도 컴포넌트 역할을 한다
+
+	- 주요 메서드:  setBackground(Color c),setFont(),getHeight(), getWidth(),setBounds(), setLocation(),setSize(int, int)
+			hasFocus(),requestFocus(),paint(),repaint(),setEnabled(),setVisible(),setTitle(),setResizable()
+
+	 
+	 [Container의 분류]
+
+		1.독집적인 컨테이너 - 독립적으로 사용되며, 다른 종속적인 컨테이너를 포함할수 있다.
+			Window - Frame 의 조상. 단지 컴포넌트를 담을수 있는 공간만 제공.
+			Frame - 가장 일반적인 윈도우모양. 타이틀바, 최소화,최대화, 닫기버튼을 가지고 있다.
+			Dialog - Frame 과 유사하지만 메뉴는 가질수 없다. 보통 크기를 변경할수 없고
+			         사용자에게 메세지를 전달하고 응답을 받기 위하여 사용된다.
+
+
+			*윈도우 계열은 생성후 반드시 setSize()메서드나 setBounds()메서드로 크기를 정해주고
+			setVisible(true)메서드로 보여야 한다.
+			
+
+		2. 종속적인 컨테이너 - 독립적으로 사용할수 없고, 다른 컨테이너에 안에서 사용됨.
+
+			Panel - 평면공간으로 여러컴포넌트를 담을수는 있지만 단독으로 사용할수 없다.
+			ScrollPane - Panel 같은 평면공간, 하나의 컴포넌트를 가질수 있고, 스크롤바가 나온다.
+			Applet - 웹브라우저 안에 포함되어 실행 된다. (안쓰임)
+
+
+
+		3.주요 메서드
+			add(),remove(),getInsets(),setLayout()등.
+
+
+[레이아웃과 관련된 클래스]
+
+	-Container에 컴포넌트들을 배치하기 위해 LayoutManager(배치관리자)인터페이스를 구현한 클래스
+
+	-주요 클래스
+    	  1) BorderLayout
+	  2) FlowLayout
+	  3) GridLayout
+	  4) CardLayout
+	 
+	 1. FlowLayout:
+
+		-순서대로 좌에서 우로 배치,가운데 정렬 기본
+		-애플릿이나 Panel의 기본 레이아웃
+
+	2. BorderLayout:
+
+		-테두리를 기준으로 배치(상하좌우 및 가운데)
+                 North/South/West/East/Center
+		-Frame의 기본 레이아웃
+		-영역 지정하지 않으면 Center에 올려 진다
+
+	3. GridLayout:
+
+		-테이블 형식으로 배치
+		-행과 열의 개수가 일정
+		-모든 컴포넌트가 동일한 크기로 배치 된다
+		 *new GridLayout(0,1)://는 행은 컴포넌트를 붙이는 것에 따라 가변적으로 열은 1로 고정시키라는 의미
+
+	4. CardLayout:
+
+		-마치 카드처럼 배치
+                -예를들면 앞에 위치한 컴포넌트 클릭시 뒤에 있는 컴포넌트 보이게 배치 하는 경우
+
+	*컨태이너의 바깥 여백 즉 컴포넌트와의 컨테이너의 여백은 getInsets()메소드를 오버라이딩 해야 한다
+	예]
+	     public Insets getInsets(){
+		//Insets(int top, int left, int bottom, int right) 
+		Insets is= new insets(10,20,30,40)
+		return is;
+	     }
+
+ 
+
+[이벤트]
+
+	[Event클래스 계층도]
+	
+	java.util.EventObject
+		|
+		|
+		|----java.awt.AWTEvent--|---ActionEvent(가장 대표적인 이벤트)(클릭)
+					|---AdjustmentEvent(스크로바등을 조정시 즉 조정가능한 컴포넌트에서 발생)
+					|---ComponentEvent
+					|---ItemEvent(아이템을 가진 컴포넌트에서 선택이 바뀌었을때 발생되는 이벤트-리스트,초이스등)
+					|---TextEvent(텍스트박스에 내용이 변경될때 발생하는 이벤트-텍스트필드등)
+
+					[ComponentEvent게층]
+
+					|----ComponentEvent
+						   |---------ContainerEvent(컨테이너에 컴포넌트가 추가되거나 삭제될때 발생하는 이벤트)
+						   |---------FocusEvent(포커스를 얻거나 잃었을때 발생하는 이벤트)
+                                                   |---------InputEvent(keyEvent/MouseEvent)
+						   |---------PaintEvent(컴포넌트가 다시 그려질때 발생하는 이벤트)
+                                                   |---------WindowEvent(원도우를 최소화하거나 닫거나할때등 발생하는 이벤트)
+
+
+	1] 이벤트(Event)란 사용자 또는 프로그램 코드에 의해서 발생하는 사건
+  
+	2] 이벤트 처리를 위한 기본 개념
+
+		- 이벤트소스(Event Source):  이벤트가 발생한 컴포넌트 개체를 의미
+		- 이벤트핸들러(Event Handler): 이벤트를 처리하기 위한 클래스로 이벤트가 발생햇을때 처리방법은
+					       다양함으로 인터페이스에 정의만 되어 있고 구현은 직접 프로그래머가 구현함.
+						리고 이런 이벤트 핸들러를 정의한 인터페이스를 리스너 인터페이스라 함
+
+		*이벤트는 jvm이 사건과 관련된 이벤트를 발생시킨다.
+		 예]사용자가 버튼을 누르면 jvm은 ActionEvent를 발생시킨다
+		 
+		       
+		- 이벤트 소스에 따라 발생되는 Event가 결정된다.
+		  예]
+		  Button 일 경우 ActionEvent,Checkbox일 경우는 ItemEvent가 발생.
+		  
+
+	3] 이벤트 핸들러 클래스의 구성 요건
+
+	   1.  XXXListener란 인터페이스 혹은 XXXAdapter클래스를 상속 받아야 함
+	   
+		예] Button 일 경우 -> ActionEvent 발생 ->  ActionListener 를 상속받는 클래스를 구성.
+		    Checkbox -> ItemEvent 발생 -> ItemListener 를 상속받는 클래스    구성
+       
+	   2. 리스너 인터페이스를  상속받은 클래스(이벤트 핸들러)는 반드시 추상메소드를 재정의해야 한다.
+	      이 메소드가 바로 이벤트를 처리해주는  메소드가 된다.
+	       예] ActionListener -> actionPerformed()
+		   ItemListener -> itemStateChanged()
+
+	4] 이벤트 소스와 이벤트 핸들러 연결
+
+	     이벤트소스. addXXXListener(이벤트 핸들러 개체)메소드를 이용해서 연결
+	     
+	     예]btnClick.addActionListener(핸들러객체);
+
+	5]이벤트 처리 절차
+	
+		1. java.awt.event패키지를  import
+		2. XXXevent가 발생하면  XXXListener 인터페이스를 상속(혹은 XXXAdapter상속)
+		3. 2번이 가지고 있는 추상 메소드 재정의
+		4. addXXXListener()메소드로 이벤트소스와 핸들러를 연결해줌
+		
+
+	6] Event 핸들러를 주요 구성방법
+  
+		1. 이벤트소스(컴포넌트)를 가지는 자기 클래스가 핸들러가 되는 방법
+		2. 이벤트 핸들러를 내부 멤버 클래스(Inner class)로   별도로 구성하는 방법
+		3. 이벤트 핸들러를 익명 내부클래스로 구성
+
+
+	7]이벤트 발생과 처리
+
+		이벤트가 발생->jvm이 이벤트 클래스의 인스턴스 생성시킴->이벤트리스너가 이벤트 소스에 등록되어 있는지 확인
+		->등록되었다면 이벤트를 처리.
+		즉 addXXXListener()메서드로 이벤트 소스와 이벤트 핸들러를 연결 시켜주지 않으면
+		아무 소용 없다
+		
+	8] Adapter 클래스
+
+	이벤트 핸들러를 작성할 때 이벤트 처리에 필요한 메서드의 개수와 관계없이 해당 이벤트 리스너에 정의된 모든 추상메서드를 구현해야 한다.
+	이러한 불편한 점을 없애기 위하여 고안된 것이 Adapter클래스이며, 이벤트 리스너를 직접 구현하는 대신에 Adapter클래스를 상속받아서
+	원하는 메서드만 작성하면 된다.
+
+	7] 이벤트 관련 Interface와 Adapter클래스
+	----------------------------------------------------------------------------------------------------
+	이벤트			|인터페이스		|추상메소드               |어댑터 클래스(추상 클래스)
+	------------------------+-----------------------+-------------------------+------------------------
+	ActionEvent	        |ActionListener		|actionPerformed()        |  X
+	------------------------+-----------------------+-------------------------+------------------------
+	ItemEvent		|ItemListener		|itemStateChanged()       |  X
+	------------------------+-----------------------+-------------------------+---------------------------------
+	AdjustmentEvent         |AdjustmentListener     |adjustmentValueChanged() |  X		   
+	------------------------+-----------------------+-------------------------+-------------
+	WindowEvent             |WindowListener         | windowClosing()	  |WindowAdapter
+			        |			| windowClosed()	  |
+				|			| widnowOpened()	  |
+				|			| windowIconified()	  |
+				|			| windowDeiconified()     |
+				|			| windowActivated()	  |
+				|			| windowDeactivated()     |
+	------------------------+-----------------------+-------------------------+--------------------------------
+	MouseEvent              |MouseListener	        | mouseEntered()	  |MouseAdapter
+				|			| mouseExited()		  |
+				|			| mouseClicked()	  |
+				|			| mousePressed()	  |
+				|			| mouseReleased()	  |
+				|                       | mouseEntered()          |
+				+-------------------------------------------------------------------------------------
+				|MouseMotionListener    | mouseDragged()          |MouseMotionAdapter
+				|		        | mouseMoved()	          |
+	------------------------+-----------------------+-------------------------+-----------------------------------
+
+
+
+
+[애플릿(Applet)]
+
+	- 웹브라우저에 임베드되어 웹브라우저의 JVM에 의해 실행 되는 프로그램
+	- 단독으로 실행 될 수 없다.
+
+
+	-애플릿 작성 규칙
+	----------------------------------------------
+	Applet			| Application
+	------------------------+----------------------
+	 반드시 클래스 속성을	| public, 디폴트 중 하나
+	  public					 
+	------------------------+----------------------
+	 Applet 클래스를 상속   | 필요한 클래스 상속
+	------------------------+----------------------
+	 기본 메소드를 가지고   |기본적으로 실행 프로그램은
+	   있다.                | main()메소드를 가져야 한다.
+	   init()/start()/	|
+	   paint()/stop()/      |
+	   destroy()            |
+	------------------------+----------------------
+	   애플릿을 포함시킬    |main()메소드를 가진 클래스
+	   웹문서(html)가 필요  |에서 단독 실행 가능
+	------------------------+----------------------
+
+	-애플릿 실행방법
+
+	1] HTML작성-> <applet code="클래스명" width="" height=""/>로 실행
+
+	2] JDK의 BIN디렉토리에 있는 AppletViewer.exe를 이용
+
+	   프람프트>AppletViewer HTML파일명(.html)
+
+
+	 -Applet클래스의 주요 메서드
+
+	init()메소드: 애플릿이 실행될때 맨 처음 호출되는 메소드,한번만 호출된다
+		       생성자와 유사한 역할
+		       멤버변수 초기화 및 레이아웃 설정 및 컴포넌트 배치등
+
+	start()메소드: 애플릿이 시작 될때 호출되는 메소드 예를 들면 다른 페이지에 갔다가
+			애플릿이 있는 페이지로 올때 호출
+
+	stop()메서드: 애플릿이 실행을 멈출때 호출되는 메서드 즉 현재 애플릿이 있는 페이지를
+		       벗어날때 호출 됨
+
+	paint(Graphics g)메서드: 화면을 다시 그려야 할때 마다 수시로 호출 되는 메서드 예를 들면 최대화 최소화시
+			paint()는 호출되지만 start()는 호출 안됨
+			Graphics 클래스는 java.awt패키지에 있음(Color클래스도 마찬가지)
+
+
+	destroy(): 애플릿이 소멸될때 호출되는 메서드 즉 브라우저를 닫는 경우
+
+
+	*상기 메서드는 브라우저나 애플릿뷰어에 의해 호출 됨
+
+
+
+
+	예제 소스]
+	import java.awt.*;
+	import java.applet.*;
+
+	public class MyGui extends Applet{
+
+
+	Button bt1,bt2,bt3;
+
+	public void init(){
+
+		System.out.println("init()호출됨");
+
+		bt1= new Button("버튼1");
+		bt2= new Button();
+		bt3 = new Button("버튼3");
+
+		bt1.setForeground(new Color(120,19,90));
+		this.add(bt1);
+		add(bt2);
+		this.add(bt3);
+		bt3.setBackground(Color.red);
+		this.setBackground(Color.yellow);
+
+	}
+
+	public void paint(Graphics g){
+
+		System.out.println("paint()호출");
+
+		g.setColor(Color.red);
+		g.drawString("Hello World",50,50);
+
+
+	}
+
+}
+
+
+
+
+[Swing]	
+
+
+ 	- Swing은 AWT(Abstract Window Toolkit)의 업그레이드 버전
+	- 스윙 컴포넌트들은 특정 플랫폼에 의존적인 코드가 전혀 포함되지 않은 순수 자바 코드로만 구현된 컴포넌트
+        - AWT는 자바 초창기 시절부터 나온것으로 JAVA뿐 아니라 C언어로도 구현되어 있음
+	- Swing프로그램을 하기 위해서는 기본적으로 javax.swing패키지 import.
+	- javax에서 x는 extends의 의미
+	- JDK1.2 버전부터 기본 내장
+
+	- 스윙은 AWT와의 호환성을 위해서 AWT에서 제공되는 대부분의 컴포넌트를 같은 형태로 제공하며, 
+	  컴포넌트 배치나 AWT의 이벤트 모델이 스윙에도 그대로 적용됨
+	
+
+	- Swing에 추가된 주요 클래스
+
+		JTable:표 형식으로 데이타 표현
+		JTree:트리 구조의 데이타 표현
+		JInternalFrame:MDI를 구성할 수 있는 컴포넌트 
+			(MDI Multiful Document Interface / SDI Single Document Interface  ex)메모장 )
+		JTabbedPane: 탭 메뉴와 같은 표현을 할 수 있는 컴포넌트등 
+
+
+	 주요 Swing패키지]
+
+		-javax.swing:자 바 스윙을 사용하는 경우에 반드시 임포트해야 하며, 자바 스윙 컴포넌트, 디폴트 컴포넌트 모델 등을 포함하고 있다.
+
+		-javax.swing.border: 각각의 컴포넌트에 보더를 설정할 수 있는 Border 인터페이스와 Border 인터페이스를 임플리먼츠한 여러개의 보더클래스로 구성.
+		
+		-javax.swing.event:java.awt.event 패키지에 정의된 이벤트외에 스윙에서 추가된 이벤트 및 이벤트리스너들로 구성
+
+		-javax.swing.table:스윙에 새롭게 추가된 테이블 컴포넌트를 위한 인터페이스와 클래스로 구성.
+
+		-javax.swing.tree: 스윙에 새롭게 추가된 트리 컴포넌트를 위한 인터페이스와 클래스로 구성.
+
+	
+	
+
+	스윙에서 지원되는 GUI의 표현 효과들을 위한 클래스]
+		-ImageIcon
+			:이미지 아이콘은 버튼이나 레벨 등 각종 아이템에 사용되어 이미지를 보여주는 역할.
+			 AWT와는 달리 프로그래머가 직접 이미지를 조작할 필요 없이 파일이나 URL만 지정하면 바로 생성할 수 있다.
+
+		-ToolTip
+			: JComponent 클래스의 setToolTipText(String text) 메소드를 이용하면 간단하게
+			  풍선 도움말을 설정할 수 있다.
+
+		-Border
+			:JComponent 클래스의 setBorder(Border boder) 메소드를 이용하여 컴포넌트에 
+			경계선을 설정할 수 있다.
+			(javax.swing.border패키지의 각종 보더클래스를 참조)
+
+
+
+
+
+	[Swing소스예]
+	package Swing;
+
+	import java.awt.Container;
+
+	import javax.swing.JFrame;
+	import javax.swing.JLabel;
+	import javax.swing.SwingConstants;
+
+	public class SwingDemo extends JFrame{
+
+		JLabel label;
+	
+		public SwingDemo()  {
+			label = new JLabel("Hello...Swing", JLabel.CENTER);
+			//AWT에서는 직접적으로 add()메서드를 이용해 컨테이너에
+                        //컴포넌트를 북착 했지만 Swing에서는 간접적으로 컴포넌트를 붙임(JDK 1.4버전까지)
+			//5.0이상 부터는 awt처럼 직접 부착 가능
+			Container cont = this.getContentPane();
+			cont.add(label);
+			//X버튼을 누르면 어플이 사라짐.완전 종료상태는 아님.
+			//(AWT에서는 X버튼 클릭시 사라지지 않음-직접 이벤트 처리 해줘야 함)
+                        //완전 종료를 위해 아래 코드 추가(AWT에서 처럼 원도우이벤트 처리해도 됨)
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		}
+
+		public static void main(String[] args) {
+			SwingDemo ex = new SwingDemo();
+			ex.setSize(300, 400);
+			ex.setVisible(true);
+		}
+	}
+
+
+	* JFRAME에서 윈도우 창 닫기
+
+	  - setDefaultCloseOperation()를 호출하지 않고 창 닫기
+	    :프로그램이 hide된 것임
+	  - setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+	    :System.exit(0)와 동일
+	  
+	  - setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE)
+	    :JFrame의 기본 즉 위 메서드를 호출 하지 않아도 동일한 효과
+	    :setVisible(false)와 같음
+	  - setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE)
+	   :닫히지 않음 즉 창을 못닫게 할때
+
+
+
+
